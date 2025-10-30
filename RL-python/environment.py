@@ -76,8 +76,65 @@ def transit_func(self, state, action):
     
     return transition_probs
 
-def can_action_at(self.state):
+def can_action_at(self, state):
     if self.grid[state.row][state.column] == 0:
         return True
     else:
         return False
+
+def _move(self, state, action):
+    if not self.can_action_at(state):
+        raise Exception("Can't move from here!")
+
+    next_state = state.clone()
+
+    if action == Action.UP:
+        next_state.row -= 1
+    elif action == Action.DOWN:
+        next_state.row += 1
+    elif action == Action.LEFT:
+        next_state.column -= 1
+    elif action == Action.RIGHT:
+        next_state.column += 1
+    
+    if not (0 <= next_state.row < self.row_length):
+        next_state = state
+    if not (0 <= next_state.column < self.column_length):
+        next_state = state
+    
+    if self.grid[next_state.row][next_state.column] == 9:
+        next_state = state
+
+def reward_func(self, state):
+    reward = self.default_reward
+    done = False
+
+    attribute = self.grid[state.row][state.column]
+    if attribute == 1:
+        reward = 1
+        done = True
+    elif attribute == -1:
+        reward = -1
+        done = True
+
+    return reward, done
+
+def reset(self):
+    self.agent_state = State(self.row_length - 1, 0)
+    return self.agent_state
+
+def step(self, action):
+    next_state, reward, doe = self.transit(self.agent_state, aciton)
+    if len(transision_probs) == 0:
+        return None, None, True
+
+    next_state = []
+    probs = []
+    for s in transition_probs:
+        next_states.append(s)
+        probs.append(transition_probs[s])
+
+    next_state = np.random.choice(next_state, p=probs)
+    reward, done = self.reward_func(next_state)
+    return next_state, reawrd, done
+
