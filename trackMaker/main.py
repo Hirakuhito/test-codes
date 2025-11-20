@@ -2,6 +2,8 @@ import numpy as np
 import pybullet as p
 import pybullet_data as pd
 
+
+
 #* init engine
 engine_id = p.connect(p.GUI)
 p.setAdditionalSearchPath(pd.getDataPath())
@@ -50,22 +52,22 @@ def create_straight(x, y, yaw, length=road_length):
         baseOrientation=p.getQuaternionFromEuler([0, 0, yaw])
     )
 
-def create_curve(radius, angle, segments=20, start_angle=0):
-    ids = []
-    for i in range(segments):
-        theta = start_angle + (angle / segments) * i
-        next_theta = start_angle + (angle / segments) * (i + 1)
+def create_curve(radius, start_angle, end_angle, arc_step=0.05):
+    arc_length = radius * abs(end_angle - start_angle)
+    num_points = max(2, int(arc_length / arc_step))
 
-        # center pos
-        x = radius * np.cos((theta + next_theta) / 2)
-        y = radius * np.sin((theta + next_theta) / 2)
+    angle_list = np.linspace(start_angle, end_angle, num_points)
 
-        yaw = (theta + next_theta) / 2 + np.pi / 2
+    points = []
+    #* calculate coordinate of each point
+    for angle in range(angle_list):
+        x = radius * np.cos(angle)
+        y = radius * np.sin(angle)
 
-        mid = create_straight(x, y, yaw)
-        ids.append(mid)
+        points.append([x, y, 0])
 
-    return ids
+    return np.array(points)
+
 
 
 #* Automatic Course Generater
