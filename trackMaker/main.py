@@ -20,7 +20,7 @@ p.createMultiBody(
     baseMass=0,
     baseCollisionShapeIndex=ground_coll,
     baseVisualShapeIndex=ground_vis,
-    basePosition=[0, 0, 0]
+    basePosition=[0, 0, -0.1]
 )
 
 #* make Road
@@ -36,7 +36,7 @@ road_coll = p.createCollisionShape(
 road_vis = p.createVisualShape(
     p.GEOM_BOX,
     halfExtents=[road_length / 2, road_with / 2, road_thicknes / 2],
-    rgbaColor=[0.1, 0.1, 0.1, 1]
+    rgbaColor=[0.3, 0.3, 0.3, 1]
 )
 
 #* road generate function
@@ -66,6 +66,15 @@ def create_curve(radius, angle, segments=20, start_angle=0):
         ids.append(mid)
 
     return ids
+
+
+#* Automatic Course Generater
+course_ids = []
+for i in range(5):
+    course_ids.append(create_straight(x= i * road_length * 0.9, y=0, yaw=0))
+
+course_ids += create_curve(radius=5, angle=np.pi / 2, segments=20, start_angle=0)
+
 
 #* Collision Detection to road (inside or outside)
 """
