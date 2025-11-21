@@ -103,6 +103,17 @@ def gen_arc_mesh(points, width=1):
 
     return vertices, faces
 
+#* save mesh point info as .obj
+def save_as_obj(vertices, indices, filename):
+    with open(filename, 'w') as f:
+        #* write out vertices data
+        for v in vertices:
+            f.write(f"v {v[0]} {v[1]} {v[2]}\n")
+        
+        #* write out faces data
+        for face in indices:
+            f.write(f"f {face[0]+1} {face[1]+1} {face[2]+1}\n")
+
 #*=========== main func ==============
 def main():
     print("\n~~ WELCOME ~~\n")
@@ -132,6 +143,8 @@ def main():
     print(f"~ points : \n{points.tolist()}\n")
     print(f"~ vertices : \n{vertices.tolist()}\n")
     print(f"~ faces : \n{faces.tolist()}\n")
+
+    save_as_obj(vertices, faces, "track_cata.obj")
 
     # arc_col = p.createCollisionShape(
     #     shapeType=p.GEOM_MESH,
