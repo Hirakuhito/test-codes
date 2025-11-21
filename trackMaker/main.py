@@ -13,7 +13,7 @@ def init_engine():
     return engine_id
 
 #*=========== road generate =============
-def gen_straight(x, y, length=5, width=1, step=0.1):
+def gen_straight(x=0, y=0, length=5, width=1, step=0.1):
     col_id = p.createCollisionShape(
         shapeType=p.GEOM_BOX, 
         halfExtents=[length / 2, width / 2, 0.06]
@@ -31,7 +31,7 @@ def gen_straight(x, y, length=5, width=1, step=0.1):
         basePosition=[x, y, 0]
     )
 
-def gen_arc_points(r, start_theta, end_theta, step=0.1):
+def gen_arc_points(r=1, start_theta=0, end_theta=np.pi/2, step=0.1):
     arc_length = r * abs(end_theta - start_theta)
     points_num = max(2, int(arc_length / step))
     theta_list = np.linspace(start_theta, end_theta, points_num)
@@ -46,18 +46,18 @@ def gen_arc_points(r, start_theta, end_theta, step=0.1):
     return np.array(points)
 
 
-def gen_curve(points, width=1):
+def gen_arc_mesh(points, width=1):
     """
     points => [x, y, 0]
     """
 
-    L_offset = []
-    R_offset = []
+    offset_L = []
+    offset_R = []
 
     N = len(points)
 
     #* culc vector
-    for i in range(points):
+    for i in range(N):
         #* Tangent
         if i == 0:
             tan_vec = points[1] - points[0]
@@ -71,12 +71,37 @@ def gen_curve(points, width=1):
         #* Normal
         normal = np.array([-unit_tan_vec[1], unit_tan_vec[0], 0])
 
-        L_offset.append(points[i] + normal * (width / 2))
-        R_offset.append(points[i] - normal * (width / 2))
+        offset_L.append(points[i] + normal * (width / 2))
+        offset_R.append(points[i] - normal * (width / 2))
+
+    offset_L = np.array(offset_L)
+    offset_R = np.array(offset_R)
 
     #* Generate triangle mesh
+    vertices = []
+    for L, R in zip(offset_L, offset_R):
+        vertices.append(L)
+        vertices.append(R)
     
+    vertices = np.array(vertices)
 
+    """
+    p0 | p1
+    p2 | p3
+    """
+    faces = []
+    for i in range(N-1):
+        p0 = i * 2
+        p1 = p0 + 1
+        p2 = p1 + 1
+        p3 = p2 + 1
+
+        faces.append([p0, p2, p1])
+        faces.append([p3, p1, p2])
+    
+    faces = np.array(faces)
+
+    return vertices, faces
 
 #*=========== main func ==============
 def main():
@@ -99,10 +124,23 @@ def main():
         basePosition=[0, 0, 0] 
     )
 
-    gen_straight()
+    gen_straight(length=2)
+
+    points = gen_arc_points(step=0.1)
+    vertices, faces = gen_arc_mesh(points)
+
+    print(f"~ points : \n{points.tolist()}\n")
+    print(f"~ vertices : \n{vertices.tolist()}\n")
+    print(f"~ faces : \n{faces.tolist()}\n")
+
+    # arc_col = p.createCollisionShape(
+    #     shapeType=p.GEOM_MESH,
+    #     vertices=vertices,
+    #     indices=faces
+    # )
 
     while True:
-        p.stepSimulation(0, 0, 5)
+        p.stepSimulation()
 
 
 if __name__ == "__main__":
