@@ -10,9 +10,9 @@ def main():
     start_pos = [0, 0]
     end_pos = [10, 0]
 
-    center_line = vdg.gen_straight_track(start_pos, end_pos, show=True)
-    mesh_data = vdg.gen_mesh_data(center_line)
-    
+    center_line = vdg.gen_straight_track(start_pos, end_pos, resolution=10, show=False)
+    vertices, mesh = vdg.gen_mesh_data(center_line, show=False)
+
 
 if __name__ == "__main__":
     main()
