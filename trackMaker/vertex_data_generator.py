@@ -1,9 +1,9 @@
+import pprint as pp
+
 import numpy as np
 
 
-def generate_straight_track(start_pos, end_pos, resolution=10):
-    print("Generating straight track")
-
+def gen_straight_track(start_pos, end_pos, resolution=10, show=False):
     """
     args:
         start_pos (list) : start position
@@ -12,8 +12,9 @@ def generate_straight_track(start_pos, end_pos, resolution=10):
         resolution (int) : Number of road segments
     
     return:
-        list : Generated coordinate's list [[x, y], [x, y], ...]
+        list (np) : Generated coordinate's list [[x, y], [x, y], ...]
     """
+    print("Generating straight track info")
 
     if len(start_pos) != 2 or len(end_pos) != 2:
         raise ValueError("Position must be input [x, y] form.")
@@ -32,15 +33,31 @@ def generate_straight_track(start_pos, end_pos, resolution=10):
         x = round(x1 + dx * i, 3)
         y = round(y1 + dy * i, 3)
         center_line.append([x, y])
+    
+    center_line = np.array(center_line)
 
-    # --- 検算プロセス (2段階) ---
-    # 検算1: 始点と終点が正しいか
-    assert center_line[0] == start_pos, f"始点不一致: {center_line[0]} != {start_pos}"
-    # 浮動小数点の誤差を考慮した終点チェック (abs(計算値 - 目標値) < 閾値)
-    assert abs(center_line[-1][0] - x2) < 1e-9 and abs(center_line[-1][1] - y2) < 1e-9, \
-           f"終点不一致: {center_line[-1]} != {end_pos}"
-    
-    # 検算2: 点の数が (分割数 + 1) になっているか
-    assert len(center_line) == resolution + 1, f"点数不一致: {len(center_line)} != {resolution + 1}"
-    
+    if show == True:
+        print(type(center_line))
+        print(center_line)
+
     return center_line
+
+def gen_mesh_data(center_line, width=5):
+    """
+    args:
+        center_line (list, np.array) : Generated center line points
+        width (float) : Road width
+
+    return:
+        mesh_data (list, np.array) : This will be like [[v1, v3, v2], [v2, v4, v3], ...]
+    """
+
+    n = len(center_line)
+    offset = []     #* [[left, right], [l, r], ...]
+
+    #* Calcurate Tangent Vector
+    for i in range(n):
+        if n == 0:
+            tangent = 0
+    
+    return "dammy data"
