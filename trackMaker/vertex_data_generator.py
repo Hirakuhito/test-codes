@@ -29,8 +29,8 @@ def gen_straight_track(start_pos, end_pos, resolution=10, show=False):
 
     center_line = []
     for i in tqdm.tqdm(range(resolution + 1), desc='Coordinate'):
-        x = round(x1 + dx * i, 3)
-        y = round(y1 + dy * i, 3)
+        x = round(x1 + dx * i, 5)
+        y = round(y1 + dy * i, 5)
         center_line.append([x, y, 0])
     
     center_line = np.array(center_line)
@@ -40,6 +40,7 @@ def gen_straight_track(start_pos, end_pos, resolution=10, show=False):
         print(f"{center_line}\n")
 
     return center_line
+
 
 def gen_mesh_data(center_line, width=5.0, show=False):
     """
@@ -53,6 +54,7 @@ def gen_mesh_data(center_line, width=5.0, show=False):
     print("# Generating mesh data")
 
     n = len(center_line)
+    normal_v = []
     left_offset = []
     right_offset = []
 
@@ -70,6 +72,7 @@ def gen_mesh_data(center_line, width=5.0, show=False):
 
         #*Normal Vector
         normal = np.array([-unit_tan[1], unit_tan[0], 0])
+        normal_v.append(normal)
         left_offset.append(center_line[i] + normal * (width/2))
         right_offset.append(center_line[i] - normal * (width/2))
 
@@ -99,4 +102,27 @@ def gen_mesh_data(center_line, width=5.0, show=False):
         print(f"# Verticies data : {type(vertices)}")
         print(f"{vertices}\n")
 
-    return vertices, faces
+        print(f"# faces data : {type(faces)}")
+        print(f"{faces}\n")
+
+    return normal_v, vertices, faces
+
+
+def save_obj(filename, normal, vertices, faces):
+    name = filename+".obj"
+
+    with open(name, "w") as f:
+        for v in vertices:
+            f.write(f"v {v[0]} {v[1]} {v[2]}\n")
+
+        for n in normal:
+            for i in range(3):
+                f.write(f"vn {n[0]} {n[1]} {n[2]}\n") #* L -> C -> R
+
+        for m in faces:
+            m_1 = m[0]+1
+            m_2 = m[1]+1
+            m_3 = m[2]+1
+            f.write(f"f {m_1}//{m_1} {m_2}//{m_2} {m_3}//{m_3}\n")
+
+        print(f"Saved {filename}.obj")
