@@ -116,8 +116,8 @@ def save_obj(filename, normal, vertices, faces):
             f.write(f"v {v[0]} {v[1]} {v[2]}\n")
 
         for n in normal:
-            for i in range(3):
-                f.write(f"vn {n[0]} {n[1]} {n[2]}\n") #* L -> C -> R
+            for _ in range(2):
+                f.write(f"vn {n[0]} {n[1]} {n[2]}\n") #* L -> R
 
         for m in faces:
             m_1 = m[0]+1
@@ -125,4 +125,4 @@ def save_obj(filename, normal, vertices, faces):
             m_3 = m[2]+1
             f.write(f"f {m_1}//{m_1} {m_2}//{m_2} {m_3}//{m_3}\n")
 
-        print(f"Saved {filename}.obj")
+        print(f"# Saved as {filename}.obj")
